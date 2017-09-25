@@ -68,4 +68,7 @@ Let’s meet the cast of characters that interact to process the program var a =
 
 [About this check this forum post](https://forum.freecodecamp.org/t/how-is-javascript-compiled-ydkjs-scope-and-closure/146498/3)
 
+#### Garbage collection and global namespaces.
+[ Garbage collection and global namespaces](https://stackoverflow.com/questions/8862665/what-does-it-mean-global-namespace-would-be-polluted/13352212)
+
 #### 
