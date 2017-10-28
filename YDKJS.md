@@ -1,4 +1,4 @@
-#Scope and Closure
+# Scope and Closure
 
 * When coding in JS, use as little global scope variable as possible. Instead use different functions and keep most (if not all) of the variables inside those functions, to prevent unnecessary data leak to the main scope of your code.
 * Use function expression instead of function declaration to keep your code's global scope even more cleaner.
