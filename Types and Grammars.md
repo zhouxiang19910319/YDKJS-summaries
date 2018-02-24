@@ -277,10 +277,529 @@
 ### 5. Strings
 
 * Strings and arrays are different. 
+
   * Strings are primitive value. 
+
   * Arrays are object. 
+
   * Strings are not immutable.
+
   * Arrays are mutable.
+
+  * ```javascript
+    a[1] = "O";
+    b[1] = "O";
+
+    a; // "foo"
+    b; // ["f","O","o"]
+    ```
+
+* Both strings and arrays have :
+
+  1. `length` property
+  2. `indexOf()` method
+  3. `concat()` method
+
+* ```javascript
+  var a = "foo";
+  var b = ["f","o","o"];
+
+  a.length;							// 3
+  b.length;							// 3
+
+  a.indexOf( "o" );					// 1
+  b.indexOf( "o" );					// 1
+
+  var c = a.concat( "bar" );			// "foobar"
+  var d = b.concat( ["b","a","r"] );	// ["f","o","o","b","a","r"]
+
+  a === c;							// false
+  b === d;							// false
+
+  a;									// "foo"
+  b;									// ["f","o","o"]
+  ```
+
+* Strings cannot be (**directly**) altered when it comes to its individual elements. It can only be changed as a whole. Arrays can.
+
+  * ```javascript
+    c = a.toUpperCase();
+    a === c;	// false
+    a;			// "foo"
+    c;			// "FOO"
+
+    b.push( "!" );
+    b;			// ["f","O","o","!"]
+    ```
+
+* If you want to alter string's down to each elements level, you can use this method: 
+
+  * ```javascript
+    a.join;			// undefined
+    a.map;			// undefined
+
+    var c = Array.prototype.join.call( a, "-" );
+    var d = Array.prototype.map.call( a, function(v){
+    	return v.toUpperCase() + ".";
+    } ).join( "" );
+
+    c;				// "f-o-o"
+    d;				// "F.O.O."
+    ```
+
+* Here is one of the ways to reverse a string. 
+
+  * The split() method splits a String object into an array of string by separating the string into sub strings.
+
+  * The reverse() method reverses an array in place. The first array element becomes the last and the last becomes the first.
+
+  * The join() method joins all elements of an array into a string.
+
+  * ```javascript
+    function reverseString(str) {
+        return str.split("").reverse().join("");
+    }
+    reverseString("hello");
+    ```
+
+* Or, you can strore your strings as arrays, so you can always call `join("")` methods on them. 
+
+### 6. Numbers
+
+* JS has only ONE numeric type: `number`  
+
+* in js, if a number does not have a decimal value or its decimal value is 0, we treat it as an "integer"
+
+  * 42.0 is an integer in js
+
+* Syntax
+
+  * `a = 42;`
+
+  * `a = 0.42;`
+
+  * `a = .42;  // 0 can be neglected ` 
+
+  * `a = 42.0;`
+
+  * `a = 42. //samehere ` 
+
+  * ```javascript
+    var a = 5E10;
+    a;					// 50000000000
+    a.toExponential();	// "5e+10"
+
+    var b = a * a;
+    b;					// 2.5e+21
+
+    var c = 1 / a;
+    c;					// 2e-11
+    ```
+
+  * `number` can be boxed into `Number()` object wrapper. so number values can access methods that are built into the `Number.prototype()`  for example: `a.toFixed()` 
+
+  * `a.toFixed()` will output a string that has a same value of the number :
+
+    * ```javascript
+      var a = 42.709;
+      a.toFixed(1);  //"42.7"
+      ```
+
+    * ```javascript
+      // invalid syntax:
+      42.toFixed( 3 );	// SyntaxError
+
+      // these are all valid:
+      (42).toFixed( 3 );	// "42.000"
+      0.42.toFixed( 3 );	// "0.420"
+      42..toFixed( 3 );	// "42.000"
+
+      42 .toFixed(3); // "42.000"  technically valid, but should be avoided cos it is confusing
+      ```
+
+* Small Decimal values
+
+  * for any languages that use IEEE 754 standard , (js included)
+
+    * 0.1+0.2===0.3;   //false
+
+  * Use `Number.EPSILON` to round off small errors.
+
+    * ```javascript
+      function numbersCloseEnoughToEqual(n1,n2) {
+      	return Math.abs( n1 - n2 ) < Number.EPSILON;
+      }
+
+      var a = 0.1 + 0.2;
+      var b = 0.3;
+
+      numbersCloseEnoughToEqual( a, b );					// true
+      numbersCloseEnoughToEqual( 0.0000001, 0.0000002 );	// false
+      ```
+
+  * Polyfill for pre-ES6:
+
+    * ```javascript
+      if (!Number.EPSILON) {
+      	Number.EPSILON = Math.pow(2,-52);
+      }
+      ```
+
+* Safe Integer Ranges
+
+  * maximum integer that exist in js:  2^53 - 1 a.k.a 9007199254740991 a.k.a   `Number.MAX_SAFE_INTEGER`
+  * minimum integer that exist in js : -9007199254740991 a.k.a `Number.MIN_SAFE_INTEGER`
+  * The main way that JS programs are confronted with dealing with such large numbers is when dealing with 64-bit IDs from databases, etc. 64-bit numbers cannot be represented accurately with the `number` type, so must be stored in (and transmitted to/from) JavaScript using `string` representation.
+
+* Testing for Integers
+
+  * test whether a number is an interger :
+
+    * ```
+      Number.isInteger( 42 );		// true
+      Number.isInteger( 42.000 );	// true
+      Number.isInteger( 42.3 );	// false
+
+      ```
+
+  * polyfill for pre-ES6
+
+    * ```javascript
+      if (!Number.isInteger) {
+      	Number.isInteger = function(num) {
+      		return typeof num == "number" && num % 1 == 0;
+      	};
+      }
+      ```
+
+  * test whether a number is a safe integer
+
+    * ```javascript
+      Number.isSafeInteger( Number.MAX_SAFE_INTEGER );	// true
+      Number.isSafeInteger( Math.pow( 2, 53 ) );			// false
+      Number.isSafeInteger( Math.pow( 2, 53 ) - 1 );		// true
+      ```
+
+  * polyfill for pre-ES6
+
+    * ```javascript
+      if (!Number.isSafeInteger) {
+      	Number.isSafeInteger = function(num) {
+      		return Number.isInteger( num ) &&
+      			Math.abs( num ) <= Number.MAX_SAFE_INTEGER;
+      	};
+      }
+      ```
+
+* 32-bit (Singed) Integers
+
+  * to force a number value in `a` to a 32-bit signed interger value, use `a|0` 
+
+* Special Values
+
+  * Non-valuable Values
+
+    * `undefined` value: undefined, type: undefined
+    * `null` value : null, type: null
+
+  * Undefined
+
+    * dont overwrite `undefined` no matter under what kind of circunstances
+
+    * another way to create `undefined` value is using `void` operator
+
+      * ```javascript
+        var a = 42;
+
+        console.log( void a, a ); // undefined 42
+        ```
+
+      * other ways of using void 
+
+  * Special Numbers
+
+    * using one number one non-number under one mathematic operation will give you `NaN` value
+
+      * ```javascript
+        var a = 2 / "foo";		// NaN
+
+        typeof a === "number";	// true
+        ```
+
+    * **`NaN` is an invalid number, an failed number, an bad number, but it is still a number.** (see above snippet)
+
+    * **`NaN`is never equals to another NaN, and it is never equals to itself** 
+
+      * ```javascript
+        var a = 2 / "foo";
+
+        a == NaN;	// false
+        a === NaN;	// false
+        ```
+
+    * how to check whether a number is `NaN` or not?
+
+      * ```
+        if (!Number.isNaN) {
+        	Number.isNaN = function(n) {
+        		return n !== n;
+        	};
+        }
+        ```
+
+      * pre-ES6 fix
+
+      * ```javascript
+        //polyfill 1
+        ```
+
+
+        if (!Number.isNaN) {
+        	Number.isNaN = function(n) {
+        		return (
+        			typeof n === "number" &&
+        			window.isNaN( n )
+        		);
+        	};
+        }
+    
+        var a = 2 / "foo";
+        var b = "foo";
+    
+        Number.isNaN( a ); // true
+        Number.isNaN( b ); // false -- phew!
+        ```
+    
+      * ```javascript
+        //polyfill 2
+    
+        if (!Number.isNaN) {
+        	Number.isNaN = function(n) {
+        		return n !== n;
+        	};
+        }
+        ```
+    
+    * in js numbers that are divided by 0 will give you this result :
+    
+      * ```javascript
+        var a = 1/0;  //Infinity
+        var b = -1/0;  //-Infinity
+        ```
+    
+      * `-Infinity` (aka `Number.NEGATIVE_INFINITY`) results from a divide-by-zero where either (but not both!) of the divide operands is negative.
+    
+      * According to the specification, if an operation like addition results in a value that's too big to represent, the IEEE 754 "round-to-nearest" mode specifies what the result should be. So, in a crude sense, `Number.MAX_VALUE + Math.pow( 2, 969 )` is closer to `Number.MAX_VALUE` than to `Infinity`, so it "rounds down," whereas `Number.MAX_VALUE + Math.pow( 2, 970 )` is closer to `Infinity` so it "rounds up".
+    
+    * in js there is a +0 and a -0.
+    
+    * additive and subtractive operation cannot give you -0.
+    
+    * **converting -0 to string will give you ''0" **
+    
+      * ```javascript
+        var a = 0 / -3;
+    
+        // (some browser) consoles at least get it right
+        a;							// -0
+    
+        // but the spec insists on lying to you!
+        a.toString();				// "0"
+        a + "";						// "0"
+        String( a );				// "0"
+    
+        // strangely, even JSON gets in on the deception
+        JSON.stringify( a );		// "0"
+        ```
+    
+    * **converting from string to number will always give you -0**
+    
+      * ```javascript
+        +"-0";				// -0
+        Number( "-0" );		// -0
+        JSON.parse( "-0" );	// -0
+        ```
+    
+    * **comparison operator is configured  to lie to you as well (tells you 0 and -0 equal to each other)**
+    
+      * ```javascript
+        var a = 0;
+        var b = 0 / -3;
+    
+        a == b;		// true
+        -0 == 0;	// true
+    
+        a === b;	// true  !!!!!!
+        -0 === 0;	// true  !!!!!!
+    
+        0 > -0;		// false
+        a > b;		// false
+        ```
+    
+    * how to distinguish -0 from 0?
+    
+      * ```javascript
+        function isNegZero(n) {
+        	n = Number( n );
+        	return (n === 0) && (1 / n === -Infinity);
+        }
+    
+        isNegZero( -0 );		// true
+        isNegZero( 0 / -3 );	// true
+        isNegZero( 0 );			// false
+        ```
+
+  * Special Equality
+
+    * in ES6 we use `Object.is()` to test whether a value is `NaN` or `-0`
+
+    * ```javascript
+      var a = 2 / "foo";
+      var b = -3 * 0;
+
+      Object.is( a, NaN );	// true
+      Object.is( b, -0 );		// true
+
+      Object.is( b, 0 );		// false
+      ```
+
+    * pre-ES6 polyfill
+
+    * ```javascript
+      if (!Object.is) {
+      	Object.is = function(v1, v2) {
+      		// test for `-0`
+      		if (v1 === 0 && v2 === 0) {
+      			return 1 / v1 === 1 / v2;
+      		}
+      		// test for `NaN`
+      		if (v1 !== v1) {
+      			return v2 !== v2;
+      		}
+      		// everything else
+      		return v1 === v2;
+      	};
+      }
+      ```
+
+* Value VS Reference
+
+  * **In JavaScript, there are no pointers, and references work a bit differently. You cannot have a reference from one JS variable to another variable. That's just not possible.**
+
+  * A reference in JS points at a (shared) **value**, so if you have 10 different references, they are all always distinct references to a single shared value; **none of them are references/pointers to each other.**
+
+  * Moreover, in JavaScript, there are no syntactic hints that control value vs. reference assignment/passing. Instead, the *type*of the value *solely* controls whether that value will be assigned by value-copy or by reference-copy.
+
+  * primitive values are passed by value copy
+
+  * objects (including arrays ,functions) are passed by reference copy
+
+  * ```javascript
+    var a = 2;
+    var b = a; // `b` is always a copy of the value in `a`
+    b++;
+    a; // 2
+    b; // 3
+    ```
+
+  * b is assigned another copy of value 2. a is untouched
+
+  * ```javascript
+    var c = [1,2,3];
+    var d = c; // `d` is a reference to the shared `[1,2,3]` value
+    d.push( 4 );
+    c; // [1,2,3,4]
+    d; // [1,2,3,4]
+    ```
+
+  * since we changed the object value by adding 4 at the end of it, all the references changed accordingly 
+
+  * ```javascript
+    var a = [1,2,3];
+    var b = a;
+    a; // [1,2,3]
+    b; // [1,2,3]
+
+    // later
+    b = [4,5,6];
+    a; // [1,2,3]
+    b; // [4,5,6]
+    ```
+
+  * `b=a` means we assigned another copy of [1,2,3] to b. so now b is [1,2,3]
+
+  * `b=[4,5,6]` b is assigned a reference to a different array of values. 
+
+  * ​
+
+  * ​
+
+  * ​
+
+  * **Here are some of my own understanding about the above snippet: **
+
+  * ```javascript
+    var a = 2;
+    var b = a;
+
+    //in javascript, when you assign a number to a variable, the number does not belong to the variable. 
+    //the number itself is a "seperate" primitive value, what got assigned to a, is a copy of that value. and this copy is an object. 
+    //so,in this snippet there are actually 3 value of 2.
+    //1st: the primitive value 2
+    //2nd: a copy of 2 that got assigned to a     (var a = 2;)
+    //3rd: another copy of 2 that got assigned to b   (var b = a;)
+
+    b++;
+    //because you are value copying primitive number 2, so changing b does not affect the value of a
+    ```
+
+  * ```javascript
+    var c = [1,2,3];
+    var d = c; // `d` is a reference to the shared `[1,2,3]` value
+    d.push( 4 );
+    c; // [1,2,3,4]
+    d; // [1,2,3,4]
+
+    //in this snippet, both c and d are references of the same array [1,2,3] therefore when one is changed, all is changed
+    ```
+
+  * ```javascript
+    var a = [1,2,3];
+    var b = a;
+    a; // [1,2,3]
+    b; // [1,2,3]
+
+    // later
+    b = [4,5,6];
+    a; // [1,2,3]
+    b; // [4,5,6]
+
+    //b=a created another reference of [1,2,3]
+    //b=[4,5,6] , b is assigned another reference , a new reference that is [4,5,6]
+    ```
+
+  * ```javascript
+    function foo(x) {
+    	x.push( 4 );
+    	x; // [1,2,3,4]
+
+    	// later
+    	x = [4,5,6];
+    	x.push( 7 );
+    	x; // [4,5,6,7]
+    }
+
+    var a = [1,2,3];
+
+    foo( a );
+
+    a; // [1,2,3,4]  not  [4,5,6,7]
+
+    ///in the above snippet there was a moment that both a and x are pointing at the same value, [1,2,3,4] but after x=[4,5,6] , the value in a does not change, because we are reference copying the arrays here. so , changing the value of one does not affect another
+    ```
+
+  * ​
+
 
 ## Chapter 4 Coercion
 
