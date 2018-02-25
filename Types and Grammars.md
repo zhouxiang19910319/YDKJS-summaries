@@ -795,7 +795,51 @@
 
     a; // [1,2,3,4]  not  [4,5,6,7]
 
-    ///in the above snippet there was a moment that both a and x are pointing at the same value, [1,2,3,4] but after x=[4,5,6] , the value in a does not change, because we are reference copying the arrays here. so , changing the value of one does not affect another
+    //in the above snippet there was a moment that both a and x are pointing at the same value, [1,2,3,4] but after x=[4,5,6] , the value in a does not change, because we are reference copying the arrays here. so , changing the value of one does not affect another
+    ```
+
+  * ```javascript
+    function foo(x) {
+    	x.push( 4 );
+    	x; // [1,2,3,4]
+
+    	// later
+    	x.length = 0; // empty existing array in-place
+    	x.push( 4, 5, 6, 7 );
+    	x; // [4,5,6,7]
+    }
+
+    var a = [1,2,3];
+
+    foo( a );
+
+    a; // [4,5,6,7]  not  [1,2,3,4]
+
+    //in the snippet above here's what happened: 
+    // 1. var a got assigned to a reference of [1,2,3]
+    // 2. x got assigned to a reference of [1,2,3]
+    // 3. x.push(4) makes the array changes from [1,2,3] to [1,2,3,4]
+    // 4. x.length=0 makes the array becomes empty
+    // 5. empty array becomes [4,5,6,7]
+    // 6. throughout the whole procedure there is only one array existed. x.lengh=0 and x.push(4,5,6,7) did not create any new array. a and x are both references of the same array, so both of them are [4,5,6,7]
+    ```
+
+  * ```javascript
+    function foo(x){
+        x.push(4);
+        x;
+        x=[];
+        x.push(4,5,6,7);
+        x; //[4,5,6,7]
+    }
+
+    var a = [1,2,3];
+    foo(a);
+    a; //[1,2,3,4]
+
+    // in the snippet above x = [] created a new reference and assigned it to x
+    // so in this snippet there are two values, and a is a reference of [1,2,3,4] and x is a reference of [] 
+    //then x becomes [4,5,6,7] 
     ```
 
   * ​
