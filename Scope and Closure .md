@@ -82,4 +82,4 @@
 
   - `const` create blockscoped variable. 
 
-- Closure is when a function is able to remember and access its lexical scope even when taht function is executing outside its lexical scope. 
+- Closure is when a function is able to remember and access its lexical scope even when that function is executing outside its lexical scope. 
